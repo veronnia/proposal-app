@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// SQLite has no native enum support in Prisma; status is a validated string
+// ("DRAFT" | "IN_PROGRESS" | "COMPLETED", enforced by the zod schemas).
+model Proposal {
+  id                String         @id @default(cuid())
+  status            String         @default("DRAFT")
+
+  // Basic info
+  title             String
+  clientName        String
+  clientContactName String?
+  clientEmail       String?
+  clientPhone       String?
+  projectName       String?
+  proposalDate      DateTime       @default(now())
+  preparedBy        String?
+
+  // Branding (inline — single implicit user, no separate entity)
+  companyName       String?
+  primaryColor      String?        @default("#2563eb")
+  companyContact    String?
+
+  // Section content — nullable, empty = not started
+  executiveSummary  String?
+  aboutUs           String?
+  projectOverview   String?
+  clientNeeds       String?
+  goalsObjectives   String?
+  proposedSolution  String?
+  scopeOfWork       String?
+  deliverables      String?
+  methodology       String?
+  timelineJson      String?        // JSON-encoded array of { id, label, startDate?, endDate?, description }
+  termsConditions   String?
+  nextSteps         String?
+  contactInfo       String?
+
+  sectionOrder      String         // JSON-encoded array of section keys
+  sectionVisibility String         // JSON-encoded map of section key -> boolean
+
+  // Pricing
+  lineItems         String         // JSON-encoded array of { id, description, quantity, unitPrice }
+  discountType      String?        // "PERCENT" | "FLAT" | null
+  discountValue     Float          @default(0)
+  taxRate           Float          @default(0)
+  subtotal          Float          @default(0)
+  discountAmount    Float          @default(0)
+  taxAmount         Float          @default(0)
+  total             Float          @default(0)
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([status])
+  @@index([updatedAt])
+}
