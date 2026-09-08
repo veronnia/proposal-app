@@ -4,3 +4,4 @@ backend/prisma/dev.db
 backend/prisma/dev.db-journal
 .env
 .DS_Store
+plan.txt
