@@ -1,0 +1,417 @@
+I want to build a modern **Proposal Generator web application**.
+
+The goal of the application is to help users quickly create professional, well-structured business proposals without having to write and format everything from scratch.
+
+## Main Concept
+
+The user should be able to enter information about a project/client, select or customize the relevant sections, and generate a polished proposal that can be reviewed, edited, saved, and exported.
+
+The application should feel like a real professional SaaS product rather than a simple form.
+
+## Core User Flow
+
+1. The user opens the application and sees a clean dashboard.
+2. The user can create a new proposal.
+3. The user enters basic information such as:
+
+   * Proposal title
+   * Client/company name
+   * Client contact information
+   * Project name
+   * Proposal date
+   * Prepared by
+4. The user defines the project:
+
+   * Project overview
+   * Client needs/problems
+   * Goals and objectives
+   * Proposed solution
+   * Scope of work
+   * Deliverables
+   * Timeline/milestones
+5. The user can add pricing information:
+
+   * Services/items
+   * Quantity
+   * Unit price
+   * Total
+   * Optional discounts
+   * Taxes if applicable
+   * Final total
+6. The user can configure additional proposal sections such as:
+
+   * Executive summary
+   * About us
+   * Methodology
+   * Timeline
+   * Deliverables
+   * Pricing
+   * Terms and conditions
+   * Next steps
+   * Contact information
+7. The application should provide a live preview of the proposal while the user is editing it.
+8. The user should be able to reorder, edit, add, or remove sections.
+9. The user can save the proposal and return to it later.
+10. The user can export/download the completed proposal as a professional PDF.
+
+## Dashboard
+
+The dashboard should show the user's existing proposals in an organized way.
+
+Each proposal should display information such as:
+
+* Proposal name
+* Client
+* Last modified date
+* Status
+* Total value
+
+Possible statuses:
+
+* Draft
+* In Progress
+* Completed
+
+The dashboard should allow users to:
+
+* Create a new proposal
+* Open an existing proposal
+* Duplicate a proposal
+* Rename a proposal
+* Delete a proposal
+* Search proposals
+* Filter proposals by status
+
+## Proposal Editor
+
+The editor should have a professional document-builder interface.
+
+Consider a layout with:
+
+* A sidebar containing proposal sections
+* A central editing area
+* A live document preview or preview panel
+
+The interface should make it easy to navigate between sections and understand which sections have been completed.
+
+The user should not feel overwhelmed by a huge form. Break the proposal creation process into logical steps or sections.
+
+## Templates
+
+The application should support proposal templates.
+
+Include several example templates with different styles, such as:
+
+* Professional
+* Modern
+* Minimal
+* Corporate
+
+A user should be able to start from a template and customize the content.
+
+The template should affect the visual presentation of the generated proposal without changing the underlying proposal data.
+
+## Pricing Builder
+
+Create a dedicated pricing section where users can dynamically add and remove line items.
+
+Each line item should support:
+
+* Description
+* Quantity
+* Unit price
+* Automatically calculated subtotal
+
+The application should automatically calculate:
+
+* Subtotal
+* Discount
+* Tax
+* Final total
+
+Calculations should update immediately when values change.
+
+## Proposal Preview
+
+The preview should resemble a real professional proposal document.
+
+It should include:
+
+* Cover page
+* Branding
+* Client information
+* Proposal sections
+* Tables where appropriate
+* Pricing
+* Timeline
+* Terms
+* Final/contact section
+
+The preview should update as the user edits the proposal.
+
+## Branding
+
+Allow the user to customize basic branding:
+
+* Company name
+* Logo
+* Primary color
+* Contact information
+
+The branding should be reflected in the proposal preview and exported PDF.
+
+## UX/UI Requirements
+
+The design should be:
+
+* Modern
+* Professional
+* Clean
+* Responsive
+* Easy to understand
+* Suitable for desktop and tablet
+* Consistent throughout the application
+
+Use clear typography, spacing, cards, buttons, forms, navigation, and visual hierarchy.
+
+Avoid making the interface look like a generic admin dashboard.
+
+The proposal itself should look polished enough that a user could send it directly to a real client.
+
+## Important Technical Considerations
+
+Before implementation, analyze the existing project structure and determine the appropriate architecture.
+
+Identify:
+
+* Required pages/routes
+* Components
+* Data models
+* State management requirements
+* Form handling
+* Proposal/template data structure
+* PDF generation approach
+* Local persistence or backend requirements
+* Validation
+* Responsive behavior
+
+Keep the architecture modular so that new proposal sections and templates can be added later without rewriting the application.
+
+## MVP Priority
+
+Prioritize the following for the first version:
+
+1. Dashboard
+2. Create proposal
+3. Proposal editor
+4. Proposal sections
+5. Dynamic pricing
+6. Live preview
+7. Templates
+8. Save/edit proposals
+9. PDF export
+10. Responsive professional UI
+
+Do not over-engineer features that are not necessary for the MVP.
+
+## Planning Phase
+
+Before writing code, thoroughly inspect the existing project and produce a clear implementation plan.
+
+The plan should explain:
+
+* What needs to be built
+* How the application should be structured
+* Which components/pages are required
+* How proposal data should be represented
+* How editing and preview synchronization should work
+* How templates should be structured
+* How pricing calculations should work
+* How proposals should be persisted
+* How PDF export should work
+* Any potential technical challenges
+* The recommended implementation order
+
+If there are existing technologies, components, or patterns in the project, reuse them where appropriate rather than unnecessarily introducing new dependencies.
+
+Do not start implementation until the planning phase is complete and the architecture and implementation approach are clearly defined.
+
+
+
+old suggestions
+
+Ready for review
+Select text to add comments on the plan
+Proposal Generator Web App — Implementation Plan
+Context
+The project directory (C:\claude project\proposal generator app) is currently empty except for plan.txt, the user's own requirements document — this is a from-scratch build, nothing to reuse. The goal is a professional SaaS-quality tool where a user builds a client proposal (basic info, project definition, pricing, configurable sections), watches it render as a polished document in real time, picks a visual template, saves/resumes it later, and exports it as a client-ready PDF.
+
+Stack decisions were confirmed with the user before design:
+
+Frontend: Vite + React + TypeScript + Tailwind CSS + shadcn/ui, pure SPA (react-router).
+Backend: Node.js + Express + Prisma + SQLite (single-file dev.db), plain REST API.
+Auth: none for MVP — single implicit user, no login, no userId fields.
+PDF export: client-side render-to-PDF using a library (not server-side, not the browser print dialog).
+Two independent npm packages, frontend/ and backend/, talking over REST (Vite dev-proxies /api to the backend). No monorepo tooling — not needed at this scale.
+
+Data Model (backend/prisma/schema.prisma)
+Single Proposal model. Two key modeling decisions:
+
+Sections are a fixed, closed set of typed columns, not a dynamic table — the spec enumerates a known list (executive summary, about us, methodology, timeline, deliverables, pricing, terms, next steps, contact info) plus basic-info/project-definition fields. "Add/remove/reorder sections" is satisfied by two small JSON columns — sectionOrder: Json (array of section keys) and sectionVisibility: Json (key → boolean) — layered on top of the typed content columns. This avoids relational-table overhead for something that isn't actually open-ended.
+Pricing line items and timeline milestones are embedded JSON arrays on Proposal, not separate tables — the whole proposal is always read/written as one document (see API design below), so a join-backed table buys nothing and adds transaction complexity to every autosave.
+Computed pricing totals are stored, not derived on read — the dashboard list needs total for every row cheaply; the backend recomputes subtotal/discountAmount/taxAmount/total from lineItems on every write using a shared calc function, so the stored values can never drift or be spoofed by client-submitted totals.
+enum ProposalStatus { DRAFT  IN_PROGRESS  COMPLETED }
+enum TemplateId     { PROFESSIONAL  MODERN  MINIMAL  CORPORATE }
+
+model Proposal {
+  id                String         @id @default(cuid())
+  status            ProposalStatus @default(DRAFT)
+  templateId        TemplateId     @default(PROFESSIONAL)
+
+  // Basic info
+  title             String
+  clientName        String
+  clientContactName String?
+  clientEmail       String?
+  clientPhone       String?
+  projectName       String?
+  proposalDate      DateTime       @default(now())
+  preparedBy        String?
+
+  // Branding (inline — single implicit user, no separate entity needed)
+  companyName       String?
+  logoUrl           String?
+  primaryColor      String?        @default("#2563eb")
+  companyContact    String?
+
+  // Section content — nullable, empty = not started
+  executiveSummary  String?
+  aboutUs           String?
+  projectOverview   String?
+  clientNeeds       String?
+  goalsObjectives   String?
+  proposedSolution  String?
+  scopeOfWork       String?
+  deliverables      String?
+  methodology       String?
+  timelineJson      Json?          // [{ id, label, startDate?, endDate?, description }]
+  termsConditions   String?
+  nextSteps         String?
+  contactInfo       String?
+
+  sectionOrder      Json           // ["executiveSummary", "aboutUs", ..., "pricing", ...]
+  sectionVisibility Json           // { "executiveSummary": true, ... }
+
+  // Pricing
+  lineItems         Json           // [{ id, description, quantity, unitPrice }]
+  discountType      String?        // "PERCENT" | "FLAT" | null
+  discountValue     Float?         @default(0)
+  taxRate           Float?         @default(0)
+  subtotal          Float          @default(0)
+  discountAmount    Float          @default(0)
+  taxAmount         Float          @default(0)
+  total             Float          @default(0)
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([status])
+  @@index([updatedAt])
+}
+REST API (backend/src/routes/proposals.ts)
+Whole-proposal GET/PUT for the editor (live preview + autosave both operate on the full in-memory draft — splitting into per-section endpoints would multiply autosave requests for no benefit at SQLite/single-user scale). One deliberate exception: a lightweight PATCH for quick dashboard actions that don't have the full document loaded.
+
+GET    /api/proposals?search=&status=       -> slim list: id, title, clientName, status, templateId, total, updatedAt
+POST   /api/proposals                       -> body: { title, clientName, templateId } -> full new Proposal w/ defaults
+GET    /api/proposals/:id                   -> full Proposal
+PUT    /api/proposals/:id                   -> full Proposal body; server recomputes+overwrites pricing totals; used by editor autosave/save
+PATCH  /api/proposals/:id                   -> body: { title?, status? } -> quick rename/status-change from dashboard, no full payload
+DELETE /api/proposals/:id
+POST   /api/proposals/:id/duplicate         -> new Proposal, title "<original> (Copy)", status reset to DRAFT
+POST   /api/uploads/logo                    -> multipart, field "logo" -> { url } (multer, static-served from backend/src/uploads)
+Folder Structure
+frontend/
+  src/
+    components/
+      ui/                # shadcn/ui primitives
+      dashboard/         # ProposalCard, ProposalTable, StatusBadge, SearchFilterBar, NewProposalDialog
+      editor/            # EditorLayout, SectionSidebar, SectionEditPanel, PreviewPanel, PricingBuilder, BrandingPanel, TemplatePicker
+        sections/        # one form component per section type (BasicInfoForm, ExecutiveSummaryForm, ...)
+      preview/           # ProposalPreviewDocument, CoverPage, PreviewSection
+        templates/       # theme.ts + Professional/Modern/Minimal/Corporate theme configs
+      pdf/               # react-pdf Document tree (mirrors preview visually, see PDF section)
+    pages/               # DashboardPage, NewProposalPage, ProposalEditorPage, NotFoundPage
+    sections/
+      sectionRegistry.ts # SECTION_TYPES: key, label, icon, EditComponent, PreviewComponent, PdfComponent, isComplete()
+    hooks/               # useProposal (React Query), useAutosave, useProposalDraft (reducer)
+    lib/                 # api.ts, pricing.ts, utils.ts
+    types/proposal.ts
+    routes.tsx
+backend/
+  prisma/schema.prisma
+  src/
+    index.ts
+    routes/proposals.ts, uploads.ts
+    controllers/proposalController.ts
+    lib/pricing.ts       # duplicated pure calc fn, mirrors frontend copy (see Pricing section)
+    validation/proposalSchema.ts   # zod, reused by controller for basic shape validation
+    uploads/
+Routing
+/                      DashboardPage
+/proposals/new         NewProposalPage (title/client/template -> POST -> redirect to edit)
+/proposals/:id/edit    ProposalEditorPage
+*                      NotFoundPage
+Editor Architecture & State Management
+Three-pane layout (EditorLayout.tsx): sidebar (ordered/reorderable section list with completion indicators, via @dnd-kit/sortable), central edit panel (renders the active section's form), preview panel (renders ProposalPreviewDocument, themed by templateId).
+
+Section-type registry (sectionRegistry.ts) is the extensibility seam: a Record<SectionKey, { label, icon, EditComponent, PreviewComponent, PdfComponent, isComplete, removable }> map. Sidebar, preview, PDF export, and completion tracking all iterate this registry + sectionOrder — adding a new section type later means adding one map entry, never touching the sidebar/preview/PDF logic itself.
+
+State: React Query owns server state (fetch on load, PUT mutation, cache invalidation for the dashboard after duplicate/delete). A useReducer in a ProposalDraftContext, seeded from the React-Query-fetched data, owns the in-progress edit draft that every pane reads/writes (dispatch({ type: 'UPDATE_FIELD', ... })). The preview reads directly from this reducer state, so it updates instantly on every keystroke with zero network roundtrip — Zustand/Redux would be reasonable alternatives but add a dependency this single-document editor doesn't need.
+
+Autosave
+useAutosave(draft) debounces (~1.5s idle) and fires the PUT mutation; an explicit Save button force-flushes immediately (also triggered before navigating away and before PDF export, so exports always reflect current state). Header shows Saved / Saving… / Unsaved / Save failed, driven by mutation state. Single-user/single-tab in practice, so "last write wins" is fine — just serialize autosave requests (never more than one in flight) to avoid an in-flight response overwriting a newer edit.
+
+Templates
+templateId enum on Proposal is the only data-level template concept — templates never touch content. Each template maps to a ThemeConfig (fonts, cover layout, accent color fallback, section spacing, header style) in templates/theme.ts. ProposalPreviewDocument and the PDF renderer both take theme = TEMPLATES[draft.templateId] plus branding (logoUrl, primaryColor, companyName) from the same draft. Switching templates is one dispatch — content is untouched.
+
+Pricing
+Shared pure function duplicated verbatim in frontend/src/lib/pricing.ts and backend/src/lib/pricing.ts (not worth a workspace package for ~20 lines of arithmetic):
+
+calculateTotals(lineItems, discountType, discountValue, taxRate)
+  -> { subtotal, discountAmount, taxAmount, total }
+Frontend calls it on every edit to drive the live preview/pricing table instantly; backend calls it inside the PUT controller to recompute and overwrite the stored totals, ignoring any client-submitted totals — the DB is always authoritative.
+
+PDF Export
+@react-pdf/renderer, per your chosen client-side-library approach. It produces a genuinely downloadable PDF with real vector/selectable text (unlike html2canvas+jsPDF, which rasterizes the DOM into images — blurry text, no selection, awkward page-break math for flowing content like the pricing table).
+
+Trade-off to flag: react-pdf has its own primitive component model (<Page>, <View>, <Text>, StyleSheet), separate from the HTML/Tailwind preview tree — so the PDF layout is a second, parallel set of components (components/pdf/) rather than a literal reuse of the preview DOM. Mitigation: both the preview and the PDF components read from the same ThemeConfig and the same draft/branding data, so visual parity is a matter of keeping two thin rendering layers in sync with one shared source of design tokens (colors, fonts, spacing) — not re-deriving content or logic. Each section-registry entry gets both a PreviewComponent and a PdfComponent so this stays mechanical as sections are added.
+
+Export flow: "Export PDF" button force-flushes autosave, builds the <ProposalPdfDocument> tree from current draft state, generates a blob via pdf(<ProposalPdfDocument />).toBlob(), and triggers a real file download via a blob-URL anchor (<a download="proposal.pdf">) — a true one-click download, not a print dialog.
+
+Validation
+react-hook-form + zod (the standard shadcn/ui pairing). Per-section zod schemas double as the section's field validation and its isComplete() predicate in the registry (one schema, two uses). Before "Mark as Completed" or "Export PDF", run all schemas and surface a summary of incomplete/empty-but-visible sections rather than blocking silently. Backend re-validates shape (types, non-negative quantities/prices) on POST/PUT with the same schemas, duplicated like pricing.ts — this is basic data-integrity safety, not re-enforcing the "is this complete" UX gate server-side.
+
+Responsive Behavior
+Desktop (≥ 1280px): all three panes side-by-side. Tablet (768–1279px): sidebar collapses to a drawer (shadcn Sheet) or icon rail; center edit panel and preview panel become an Edit/Preview Tabs toggle instead of side-by-side (same pattern as Google Docs/Notion mobile). Implemented via Tailwind breakpoints directly in EditorLayout.tsx — the sidebar/edit/preview components themselves stay layout-agnostic.
+
+Key Risks
+Preview/PDF visual parity — two separate rendering trees (HTML preview vs react-pdf) sharing only data/theme tokens, not DOM. Highest-effort item; budget real time to keep them looking the same as templates/content evolve.
+Live preview perf — keep MVP section content as plain multi-line text (not rich-text) and memoize PreviewSection per section to avoid whole-document re-renders on every keystroke.
+Section reordering state — key completion/visibility/content off the section-type key, never array index, so drag-reorder can't scramble state.
+Logo storage — local filesystem under backend/src/uploads/, static-served; fine for this MVP, not durable/scalable storage if deployed for real later.
+Autosave races — serialize in-flight PUTs, force-flush on navigate-away and before export.
+Implementation Order
+Backend scaffold: Express + Prisma schema/migration + full CRUD/duplicate/patch endpoints, verified via curl before any UI exists.
+Frontend scaffold + Dashboard wired to real list/search/filter/create/duplicate/delete/rename — first demoable slice, real data end-to-end.
+New-proposal flow + editor shell with just Basic Info working (load → edit → autosave → preview loop proven once, before scaling to all sections).
+Section registry + remaining section edit/preview form pairs (mechanical repetition once the pattern exists).
+Pricing builder + shared pricing.ts + backend recompute-on-save.
+Live preview polish: ProposalPreviewDocument, Cover Page, BrandingPanel (logo upload + color picker).
+Templates: theme.ts + four ThemeConfigs + TemplatePicker, layered onto the already-working preview.
+Autosave/save-status polish + zod validation + completion indicators.
+PDF export: components/pdf/ tree + export button/download flow — sequenced last since it depends on preview/branding/templates being visually settled.
+Responsive pass for the 3-pane editor at tablet widths.
+Verification
+Backend: npx prisma migrate dev runs clean; each endpoint exercised via curl/Postman (create, list w/ search+filter, get, put w/ recomputed totals, patch rename/status, duplicate, delete, logo upload) before frontend work starts.
+Frontend: npm run dev (Vite) with proxy to backend; manually walk the full user flow — create proposal, fill every section, add/remove/reorder pricing line items and confirm totals update immediately, reorder/hide sections in the sidebar and confirm the preview matches, switch templates and confirm content is unchanged, close and reopen the proposal (confirm autosave persisted), export PDF and open the downloaded file to confirm it visually matches the preview and totals.
+Resize the editor to tablet width and confirm the drawer/tabs layout takes over without breaking editing.
